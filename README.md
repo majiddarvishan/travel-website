@@ -50,3 +50,62 @@ mkdir -p src/pages
 
 # Start the React app
 npm start
+
+# Website Database Setup
+This SQL file provides:
+
+1. Table Creation:
+
+* places table for storing destination information
+* reviews table with a foreign key relationship to places
+
+
+2. Sample Data:
+
+* 8 popular travel destinations with detailed descriptions
+* 10 reviews spread across different destinations
+
+
+3. Performance Optimization:
+
+* Indexes for faster queries on commonly accessed fields
+* Constraints to ensure data integrity (like rating range check)
+
+To use this SQL file:
+
+# Option 1: With SQLite CLI
+
+```bash
+# In your project directory
+sqlite3 backend/travel.db < travel-db-setup.sql
+```
+
+# Option 2: Import via Go
+You can create a function in your Go backend to execute this SQL file during startup:
+
+```go
+func importSQLFile(db *gorm.DB, filename string) error {
+    content, err := ioutil.ReadFile(filename)
+    if err != nil {
+        return err
+    }
+
+    statements := strings.Split(string(content), ";")
+    for _, stmt := range statements {
+        stmt = strings.TrimSpace(stmt)
+        if stmt == "" {
+            continue
+        }
+
+        result := db.Exec(stmt)
+        if result.Error != nil {
+            return result.Error
+        }
+    }
+
+    return nil
+}
+```
+
+This SQL schema is compatible with the Go and React code provided earlier.
+The sample data will give your travel website a populated look from the start.
